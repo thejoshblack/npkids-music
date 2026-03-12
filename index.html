@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kids Music Player</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 30px 16px;
+    }
+
+    .player {
+      background: #16213e;
+      border-radius: 20px;
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      margin-bottom: 24px;
+      color: #e94560;
+    }
+
+    .now-playing {
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .now-playing .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .now-playing .track-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    audio {
+      width: 100%;
+      margin: 16px 0;
+      border-radius: 8px;
+    }
+
+    .playlist {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .playlist li {
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      background: #0f3460;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+
+    .playlist li:hover {
+      background: #e94560;
+    }
+
+    .playlist li.active {
+      background: #e94560;
+      font-weight: bold;
+    }
+
+    .track-num {
+      font-size: 0.8rem;
+      color: #aaa;
+      min-width: 20px;
+    }
+
+    .playlist li.active .track-num {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="player">
+    <h1>🎵 Kids Music Player</h1>
+
+    <div class="now-playing">
+      <div class="label">Now Playing</div>
+      <div class="track-name" id="track-title">Select a song below</div>
+    </div>
+
+    <audio id="audio-player" controls></audio>
+
+    <ul class="playlist" id="playlist"></ul>
+  </div>
+
+  <script>
+    const tracks = [
+      { title: "Song One",   src: "audio/song1.mp3" },
+      { title: "Song Two",   src: "audio/song2.mp3" },
+      { title: "Song Three", src: "audio/song3.mp3" },
+    ];
+
+    const player = document.getElementById('audio-player');
+    const titleEl = document.getElementById('track-title');
+    const playlistEl = document.getElementById('playlist');
+    let currentIndex = 0;
+
+    function loadTrack(index) {
+      const track = tracks[index];
+      player.src = track.src;
+      titleEl.textContent = track.title;
+      currentIndex = index;
+
+      document.querySelectorAll('.playlist li').forEach((li, i) => {
+        li.classList.toggle('active', i === index);
+      });
+
+      player.play();
+    }
+
+    // Build playlist UI
+    tracks.forEach((track, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="track-num">${index + 1}</span> ${track.title}`;
+      li.addEventListener('click', () => loadTrack(index));
+      playlistEl.appendChild(li);
+    });
+
+    // Auto-advance to next track
+    player.addEventListener('ended', () => {
+      if (currentIndex < tracks.length - 1) {
+        loadTrack(currentIndex + 1);
+      }
+    });
+  </script>
+</body>
+</html>
