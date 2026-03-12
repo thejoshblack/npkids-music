@@ -116,9 +116,13 @@
 
   <script>
     const tracks = [
-      { title: "Song One",   src: "audio/song1.mp3" },
-      { title: "Song Two",   src: "audio/song2.mp3" },
-      { title: "Song Three", src: "audio/song3.mp3" },
+      { title: "Children Free Music",         src: "audio/01 Soundore - Children Free Music.mp3" },
+      { title: "Children Music Free",          src: "audio/02 Soundore - Children Music Free.mp3" },
+      { title: "Childrens Music",              src: "audio/03 Soundore - Childrens Music.mp3" },
+      { title: "Free Children Music",          src: "audio/04 Soundore - Free Children Music.mp3" },
+      { title: "Free Childrens Music",         src: "audio/05 Soundore - Free Childrens Music.mp3" },
+      { title: "Background Children Music",    src: "audio/06 Soundore - Background Children Music.mp3" },
+      { title: "Background Childrens Music",   src: "audio/07 Soundore - Background Childrens Music.mp3" },
     ];
 
     const player = document.getElementById('audio-player');
@@ -139,7 +143,6 @@
       player.play();
     }
 
-    // Build playlist UI
     tracks.forEach((track, index) => {
       const li = document.createElement('li');
       li.innerHTML = `<span class="track-num">${index + 1}</span> ${track.title}`;
@@ -147,7 +150,6 @@
       playlistEl.appendChild(li);
     });
 
-    // Auto-advance to next track
     player.addEventListener('ended', () => {
       if (currentIndex < tracks.length - 1) {
         loadTrack(currentIndex + 1);
