@@ -98,6 +98,13 @@
     .playlist li.active .track-num {
       color: #fff;
     }
+
+    .error {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #ffb4b4;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -106,29 +113,52 @@
 
     <div class="now-playing">
       <div class="label">Now Playing</div>
-      <div class="track-name" id="track-title">Select a song below</div>
+      <div class="track-name" id="track-title">Loading playlist…</div>
     </div>
 
     <audio id="audio-player" controls></audio>
 
     <ul class="playlist" id="playlist"></ul>
+    <div class="error" id="error-msg"></div>
   </div>
 
   <script>
-    const tracks = [
-      { title: "Children Free Music",         src: "audio/01 Soundore - Children Free Music.mp3" },
-      { title: "Children Music Free",          src: "audio/02 Soundore - Children Music Free.mp3" },
-      { title: "Childrens Music",              src: "audio/03 Soundore - Childrens Music.mp3" },
-      { title: "Free Children Music",          src: "audio/04 Soundore - Free Children Music.mp3" },
-      { title: "Free Childrens Music",         src: "audio/05 Soundore - Free Childrens Music.mp3" },
-      { title: "Background Children Music",    src: "audio/06 Soundore - Background Children Music.mp3" },
-      { title: "Background Childrens Music",   src: "audio/07 Soundore - Background Childrens Music.mp3" },
-    ];
-
     const player = document.getElementById('audio-player');
     const titleEl = document.getElementById('track-title');
     const playlistEl = document.getElementById('playlist');
+    const errorEl = document.getElementById('error-msg');
+
+    let tracks = [];
     let currentIndex = 0;
+
+    async function loadPlaylist() {
+      try {
+        const res = await fetch('playlist.json');
+        if (!res.ok) throw new Error('Network response was not ok');
+        tracks = await res.json();
+
+        if (!Array.isArray(tracks) || tracks.length === 0) {
+          throw new Error('Playlist is empty');
+        }
+
+        buildPlaylistUI();
+        titleEl.textContent = 'Select a song below';
+      } catch (err) {
+        console.error(err);
+        titleEl.textContent = 'Unable to load playlist';
+        errorEl.textContent = 'Please contact the admin to check playlist.json.';
+      }
+    }
+
+    function buildPlaylistUI() {
+      playlistEl.innerHTML = '';
+      tracks.forEach((track, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="track-num">${index + 1}</span> ${track.title}`;
+        li.addEventListener('click', () => loadTrack(index));
+        playlistEl.appendChild(li);
+      });
+    }
 
     function loadTrack(index) {
       const track = tracks[index];
@@ -143,18 +173,13 @@
       player.play();
     }
 
-    tracks.forEach((track, index) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="track-num">${index + 1}</span> ${track.title}`;
-      li.addEventListener('click', () => loadTrack(index));
-      playlistEl.appendChild(li);
-    });
-
     player.addEventListener('ended', () => {
       if (currentIndex < tracks.length - 1) {
         loadTrack(currentIndex + 1);
       }
     });
+
+    loadPlaylist();
   </script>
 </body>
 </html>
